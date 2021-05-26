@@ -65,18 +65,18 @@ class HrExpenseSheet(models.Model):
     @api.model
     def create(self, vals):
         sheet = super().create(vals)
-        if "purchase_request_id" in vals:
+        if vals.get("purchase_request_id"):
             sheet.mapped("expense_line_ids").unlink()
-        sheet._do_process_from_purchase_request()
-        sheet.pr_line_ids.unlink()  # clean after use
+            sheet._do_process_from_purchase_request()
+            sheet.pr_line_ids.unlink()  # clean after use
         return sheet
 
     def write(self, vals):
         res = super().write(vals)
-        if "purchase_request_id" in vals:
+        if vals.get("purchase_request_id"):
             self.mapped("expense_line_ids").unlink()
-        self._do_process_from_purchase_request()
-        self.mapped("pr_line_ids").unlink()  # clean after use
+            self._do_process_from_purchase_request()
+            self.mapped("pr_line_ids").unlink()  # clean after use
         return res
 
     def _do_process_from_purchase_request(self):
